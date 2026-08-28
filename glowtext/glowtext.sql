@@ -1,0 +1,17 @@
+CREATE TABLE IF NOT EXISTS `glowtext_placements` (
+    `id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
+    `text` VARCHAR(128) NOT NULL,
+    `layout` VARCHAR(16) NOT NULL DEFAULT 'horizontal',
+    `alignment` VARCHAR(16) NOT NULL DEFAULT 'center',
+    `spacing` DOUBLE NOT NULL DEFAULT 0.08,
+    `line_spacing` DOUBLE NOT NULL DEFAULT 0.20,
+    `tint` TINYINT UNSIGNED NOT NULL DEFAULT 0,
+    `glyph_tints_json` LONGTEXT NULL,
+    `light_enabled` TINYINT(1) NOT NULL DEFAULT 1,
+    `matrix_json` LONGTEXT NOT NULL,
+    `created_by` VARCHAR(80) NOT NULL,
+    `updated_by` VARCHAR(80) NOT NULL,
+    `created_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    `updated_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;

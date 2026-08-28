@@ -1,0 +1,826 @@
+{
+  "resource": "glowglyphs",
+  "texture_dictionary": "glowglyphs_txd_v4",
+  "ytyp": "glowglyphs_v4",
+  "variants": {
+    "glow_suffix": "_v4",
+    "matte_suffix": "_matte"
+  },
+  "emissive_multiplier": 4.0,
+  "font": "Roboto Mono Bold",
+  "nominal_cap_height": 1.0,
+  "extrusion": 0.075,
+  "bevel_depth": 0.012,
+  "variations": [
+    [
+      255,
+      255,
+      255,
+      255
+    ],
+    [
+      255,
+      32,
+      32,
+      255
+    ],
+    [
+      255,
+      112,
+      24,
+      255
+    ],
+    [
+      255,
+      224,
+      32,
+      255
+    ],
+    [
+      128,
+      255,
+      32,
+      255
+    ],
+    [
+      32,
+      255,
+      72,
+      255
+    ],
+    [
+      24,
+      255,
+      176,
+      255
+    ],
+    [
+      24,
+      240,
+      255,
+      255
+    ],
+    [
+      64,
+      176,
+      255,
+      255
+    ],
+    [
+      48,
+      72,
+      255,
+      255
+    ],
+    [
+      144,
+      48,
+      255,
+      255
+    ],
+    [
+      240,
+      32,
+      255,
+      255
+    ],
+    [
+      255,
+      48,
+      144,
+      255
+    ],
+    [
+      255,
+      214,
+      170,
+      255
+    ],
+    [
+      190,
+      220,
+      255,
+      255
+    ],
+    [
+      8,
+      8,
+      12,
+      255
+    ]
+  ],
+  "glyphs": [
+    {
+      "character": "A",
+      "model": "glowglyph_upper_a",
+      "width": 0.8476909399032593,
+      "height": 1.0000000204890966,
+      "baseline": 0.0,
+      "advance": 0.72
+    },
+    {
+      "character": "B",
+      "model": "glowglyph_upper_b",
+      "width": 0.7323887348175049,
+      "height": 1.0000000204890966,
+      "baseline": 0.0,
+      "advance": 0.72
+    },
+    {
+      "character": "C",
+      "model": "glowglyph_upper_c",
+      "width": 0.7447187304496765,
+      "height": 1.02762783318758,
+      "baseline": 0.0,
+      "advance": 0.72
+    },
+    {
+      "character": "D",
+      "model": "glowglyph_upper_d",
+      "width": 0.7100255489349365,
+      "height": 1.0000000167638063,
+      "baseline": 0.0,
+      "advance": 0.72
+    },
+    {
+      "character": "E",
+      "model": "glowglyph_upper_e",
+      "width": 0.6876692771911621,
+      "height": 1.0000000167638063,
+      "baseline": 0.0,
+      "advance": 0.72
+    },
+    {
+      "character": "F",
+      "model": "glowglyph_upper_f",
+      "width": 0.6896418333053589,
+      "height": 1.0000000167638063,
+      "baseline": 0.0,
+      "advance": 0.72
+    },
+    {
+      "character": "G",
+      "model": "glowglyph_upper_g",
+      "width": 0.7319555282592773,
+      "height": 1.026310008019209,
+      "baseline": 0.0,
+      "advance": 0.72
+    },
+    {
+      "character": "H",
+      "model": "glowglyph_upper_h",
+      "width": 0.6797788143157959,
+      "height": 1.0000000167638063,
+      "baseline": 0.0,
+      "advance": 0.72
+    },
+    {
+      "character": "I",
+      "model": "glowglyph_upper_i",
+      "width": 0.5962715148925781,
+      "height": 1.0000000167638063,
+      "baseline": 0.0,
+      "advance": 0.72
+    },
+    {
+      "character": "J",
+      "model": "glowglyph_upper_j",
+      "width": 0.6936981678009033,
+      "height": 1.0131570994853973,
+      "baseline": 0.0,
+      "advance": 0.72
+    },
+    {
+      "character": "K",
+      "model": "glowglyph_upper_k",
+      "width": 0.8028028011322021,
+      "height": 1.0000000167638063,
+      "baseline": 0.0,
+      "advance": 0.72
+    },
+    {
+      "character": "L",
+      "model": "glowglyph_upper_l",
+      "width": 0.6764911413192749,
+      "height": 1.0000000167638063,
+      "baseline": 0.0,
+      "advance": 0.72
+    },
+    {
+      "character": "M",
+      "model": "glowglyph_upper_m",
+      "width": 0.6955597400665283,
+      "height": 1.0000000167638063,
+      "baseline": 0.0,
+      "advance": 0.72
+    },
+    {
+      "character": "N",
+      "model": "glowglyph_upper_n",
+      "width": 0.6791212558746338,
+      "height": 1.0000000167638063,
+      "baseline": 0.0,
+      "advance": 0.72
+    },
+    {
+      "character": "O",
+      "model": "glowglyph_upper_o",
+      "width": 0.744217574596405,
+      "height": 1.02631114423275,
+      "baseline": 0.0,
+      "advance": 0.72
+    },
+    {
+      "character": "P",
+      "model": "glowglyph_upper_p",
+      "width": 0.7113505005836487,
+      "height": 1.0000000167638063,
+      "baseline": 0.0,
+      "advance": 0.72
+    },
+    {
+      "character": "Q",
+      "model": "glowglyph_upper_q",
+      "width": 0.7975623607635498,
+      "height": 1.1895982176065445,
+      "baseline": 0.0,
+      "advance": 0.72
+    },
+    {
+      "character": "R",
+      "model": "glowglyph_upper_r",
+      "width": 0.7455326318740845,
+      "height": 1.0000000167638063,
+      "baseline": 0.0,
+      "advance": 0.72
+    },
+    {
+      "character": "S",
+      "model": "glowglyph_upper_s",
+      "width": 0.7502020597457886,
+      "height": 1.025654885917902,
+      "baseline": 0.0,
+      "advance": 0.72
+    },
+    {
+      "character": "T",
+      "model": "glowglyph_upper_t",
+      "width": 0.814574122428894,
+      "height": 1.0000000167638063,
+      "baseline": 0.0,
+      "advance": 0.72
+    },
+    {
+      "character": "U",
+      "model": "glowglyph_upper_u",
+      "width": 0.6843820810317993,
+      "height": 1.0131576620042324,
+      "baseline": 0.0,
+      "advance": 0.72
+    },
+    {
+      "character": "V",
+      "model": "glowglyph_upper_v",
+      "width": 0.824774980545044,
+      "height": 1.0000000204890966,
+      "baseline": 0.0,
+      "advance": 0.72
+    },
+    {
+      "character": "W",
+      "model": "glowglyph_upper_w",
+      "width": 0.8254654407501221,
+      "height": 1.0000000204890966,
+      "baseline": 0.0,
+      "advance": 0.72
+    },
+    {
+      "character": "X",
+      "model": "glowglyph_upper_x",
+      "width": 0.8579420447349548,
+      "height": 1.0000000204890966,
+      "baseline": 0.0,
+      "advance": 0.72
+    },
+    {
+      "character": "Y",
+      "model": "glowglyph_upper_y",
+      "width": 0.8508948087692261,
+      "height": 1.0000000167638063,
+      "baseline": 0.0,
+      "advance": 0.72
+    },
+    {
+      "character": "Z",
+      "model": "glowglyph_upper_z",
+      "width": 0.7422449588775635,
+      "height": 1.0000000167638063,
+      "baseline": 0.0,
+      "advance": 0.72
+    },
+    {
+      "character": "a",
+      "model": "glowglyph_lower_a",
+      "width": 0.6896538138389587,
+      "height": 0.7803909257054329,
+      "baseline": 0.0,
+      "advance": 0.72
+    },
+    {
+      "character": "b",
+      "model": "glowglyph_lower_b",
+      "width": 0.6797788143157959,
+      "height": 1.0657585449516773,
+      "baseline": 0.0,
+      "advance": 0.72
+    },
+    {
+      "character": "c",
+      "model": "glowglyph_lower_c",
+      "width": 0.6774611473083496,
+      "height": 0.7810557447373867,
+      "baseline": 0.0,
+      "advance": 0.72
+    },
+    {
+      "character": "d",
+      "model": "glowglyph_lower_d",
+      "width": 0.6791212558746338,
+      "height": 1.0657661743462086,
+      "baseline": 0.0,
+      "advance": 0.72
+    },
+    {
+      "character": "e",
+      "model": "glowglyph_lower_e",
+      "width": 0.7106831073760986,
+      "height": 0.7804010435938835,
+      "baseline": 0.0,
+      "advance": 0.72
+    },
+    {
+      "character": "f",
+      "model": "glowglyph_lower_f",
+      "width": 0.7201024293899536,
+      "height": 1.0821936298161745,
+      "baseline": 0.0,
+      "advance": 0.72
+    },
+    {
+      "character": "g",
+      "model": "glowglyph_lower_g",
+      "width": 0.6883268356323242,
+      "height": 1.0473524332046509,
+      "baseline": 0.0,
+      "advance": 0.72
+    },
+    {
+      "character": "h",
+      "model": "glowglyph_lower_h",
+      "width": 0.6797788143157959,
+      "height": 1.0526030231267214,
+      "baseline": 0.0,
+      "advance": 0.72
+    },
+    {
+      "character": "i",
+      "model": "glowglyph_lower_i",
+      "width": 0.6225730180740356,
+      "height": 1.0335477758198977,
+      "baseline": 0.0,
+      "advance": 0.72
+    },
+    {
+      "character": "j",
+      "model": "glowglyph_lower_j",
+      "width": 0.4764102101325989,
+      "height": 1.3209050297737122,
+      "baseline": 0.0,
+      "advance": 0.72
+    },
+    {
+      "character": "k",
+      "model": "glowglyph_lower_k",
+      "width": 0.7552217245101929,
+      "height": 1.0526030231267214,
+      "baseline": 0.0,
+      "advance": 0.72
+    },
+    {
+      "character": "l",
+      "model": "glowglyph_lower_l",
+      "width": 0.644271731376648,
+      "height": 1.0526030231267214,
+      "baseline": 0.0,
+      "advance": 0.72
+    },
+    {
+      "character": "m",
+      "model": "glowglyph_lower_m",
+      "width": 0.7455326318740845,
+      "height": 0.7672408986836672,
+      "baseline": 0.0,
+      "advance": 0.72
+    },
+    {
+      "character": "n",
+      "model": "glowglyph_lower_n",
+      "width": 0.6778061389923096,
+      "height": 0.7672376204282045,
+      "baseline": 0.0,
+      "advance": 0.72
+    },
+    {
+      "character": "o",
+      "model": "glowglyph_lower_o",
+      "width": 0.7139708399772644,
+      "height": 0.7810577377676964,
+      "baseline": 0.0,
+      "advance": 0.72
+    },
+    {
+      "character": "p",
+      "model": "glowglyph_lower_p",
+      "width": 0.6791212558746338,
+      "height": 1.0407733917236328,
+      "baseline": 0.0,
+      "advance": 0.72
+    },
+    {
+      "character": "q",
+      "model": "glowglyph_lower_q",
+      "width": 0.6791212558746338,
+      "height": 1.040773868560791,
+      "baseline": 0.0,
+      "advance": 0.72
+    },
+    {
+      "character": "r",
+      "model": "glowglyph_lower_r",
+      "width": 0.593519926071167,
+      "height": 0.7672363091260195,
+      "baseline": 0.0,
+      "advance": 0.72
+    },
+    {
+      "character": "s",
+      "model": "glowglyph_lower_s",
+      "width": 0.6925238370895386,
+      "height": 0.7810486331582069,
+      "baseline": 0.0,
+      "advance": 0.72
+    },
+    {
+      "character": "t",
+      "model": "glowglyph_lower_t",
+      "width": 0.6862187385559082,
+      "height": 0.9421385377645493,
+      "baseline": 0.0,
+      "advance": 0.72
+    },
+    {
+      "character": "u",
+      "model": "glowglyph_lower_u",
+      "width": 0.6666280627250671,
+      "height": 0.7679006792604923,
+      "baseline": 0.0,
+      "advance": 0.72
+    },
+    {
+      "character": "v",
+      "model": "glowglyph_lower_v",
+      "width": 0.7752691507339478,
+      "height": 0.7540806103497744,
+      "baseline": 0.0,
+      "advance": 0.72
+    },
+    {
+      "character": "w",
+      "model": "glowglyph_lower_w",
+      "width": 0.8104031085968018,
+      "height": 0.7540806103497744,
+      "baseline": 0.0,
+      "advance": 0.72
+    },
+    {
+      "character": "x",
+      "model": "glowglyph_lower_x",
+      "width": 0.8020089864730835,
+      "height": 0.7540806103497744,
+      "baseline": 0.0,
+      "advance": 0.72
+    },
+    {
+      "character": "y",
+      "model": "glowglyph_lower_y",
+      "width": 0.8393468856811523,
+      "height": 1.041428029537201,
+      "baseline": 0.0,
+      "advance": 0.72
+    },
+    {
+      "character": "z",
+      "model": "glowglyph_lower_z",
+      "width": 0.7113406658172607,
+      "height": 0.7540806103497744,
+      "baseline": 0.0,
+      "advance": 0.72
+    },
+    {
+      "character": "0",
+      "model": "glowglyph_num_0",
+      "width": 0.6659705638885498,
+      "height": 1.0276340059936047,
+      "baseline": 0.0,
+      "advance": 0.72
+    },
+    {
+      "character": "1",
+      "model": "glowglyph_num_1",
+      "width": 0.4693666100502014,
+      "height": 1.0000000167638063,
+      "baseline": 0.0,
+      "advance": 0.72
+    },
+    {
+      "character": "2",
+      "model": "glowglyph_num_2",
+      "width": 0.7159805297851562,
+      "height": 1.0131576228886843,
+      "baseline": 0.0,
+      "advance": 0.72
+    },
+    {
+      "character": "3",
+      "model": "glowglyph_num_3",
+      "width": 0.7008923292160034,
+      "height": 1.0263123363256454,
+      "baseline": 0.0,
+      "advance": 0.72
+    },
+    {
+      "character": "4",
+      "model": "glowglyph_num_4",
+      "width": 0.7419815063476562,
+      "height": 1.0000000167638063,
+      "baseline": 0.0,
+      "advance": 0.72
+    },
+    {
+      "character": "5",
+      "model": "glowglyph_num_5",
+      "width": 0.686440646648407,
+      "height": 1.0131579153239727,
+      "baseline": 0.0,
+      "advance": 0.72
+    },
+    {
+      "character": "6",
+      "model": "glowglyph_num_6",
+      "width": 0.6955660581588745,
+      "height": 1.0210510194301605,
+      "baseline": 0.0,
+      "advance": 0.72
+    },
+    {
+      "character": "7",
+      "model": "glowglyph_num_7",
+      "width": 0.7152858972549438,
+      "height": 1.0000000204890966,
+      "baseline": 0.0,
+      "advance": 0.72
+    },
+    {
+      "character": "8",
+      "model": "glowglyph_num_8",
+      "width": 0.6850564479827881,
+      "height": 1.0263120532035828,
+      "baseline": 0.0,
+      "advance": 0.72
+    },
+    {
+      "character": "9",
+      "model": "glowglyph_num_9",
+      "width": 0.6830728054046631,
+      "height": 1.021051775664091,
+      "baseline": 0.0,
+      "advance": 0.72
+    },
+    {
+      "character": ".",
+      "model": "glowglyph_punct_period",
+      "width": 0.2965036630630493,
+      "height": 0.2826803959906101,
+      "baseline": 0.0,
+      "advance": 0.35
+    },
+    {
+      "character": ",",
+      "model": "glowglyph_punct_comma",
+      "width": 0.28082016110420227,
+      "height": 0.47396138310432434,
+      "baseline": 0.0,
+      "advance": 0.35
+    },
+    {
+      "character": "!",
+      "model": "glowglyph_punct_exclamation",
+      "width": 0.25573664903640747,
+      "height": 1.0098898094147444,
+      "baseline": 0.0,
+      "advance": 0.4
+    },
+    {
+      "character": "?",
+      "model": "glowglyph_punct_question",
+      "width": 0.662905216217041,
+      "height": 1.0217297226190567,
+      "baseline": 0.0,
+      "advance": 0.6
+    },
+    {
+      "character": "'",
+      "model": "glowglyph_punct_apostrophe",
+      "width": 0.18333742022514343,
+      "height": 0.39966750144958496,
+      "baseline": 0.0,
+      "advance": 0.35
+    },
+    {
+      "character": "\"",
+      "model": "glowglyph_punct_quote",
+      "width": 0.44832536578178406,
+      "height": 0.3898044228553772,
+      "baseline": 0.0,
+      "advance": 0.45
+    },
+    {
+      "character": ":",
+      "model": "glowglyph_punct_colon",
+      "width": 0.2965036630630493,
+      "height": 0.8258069939911366,
+      "baseline": 0.0,
+      "advance": 0.35
+    },
+    {
+      "character": ";",
+      "model": "glowglyph_punct_semicolon",
+      "width": 0.32941609621047974,
+      "height": 1.0841844379901886,
+      "baseline": 0.0,
+      "advance": 0.35
+    },
+    {
+      "character": "-",
+      "model": "glowglyph_punct_hyphen",
+      "width": 0.5903536081314087,
+      "height": 0.19057032465934753,
+      "baseline": 0.0,
+      "advance": 0.55
+    },
+    {
+      "character": "_",
+      "model": "glowglyph_punct_underscore",
+      "width": 0.6422991752624512,
+      "height": 0.18531006760895252,
+      "baseline": 0.0,
+      "advance": 0.72
+    },
+    {
+      "character": "/",
+      "model": "glowglyph_punct_slash",
+      "width": 0.5884398221969604,
+      "height": 1.082192301750183,
+      "baseline": 0.0,
+      "advance": 0.6
+    },
+    {
+      "character": "\\",
+      "model": "glowglyph_punct_backslash",
+      "width": 0.5890973806381226,
+      "height": 1.082192301750183,
+      "baseline": 0.0,
+      "advance": 0.6
+    },
+    {
+      "character": "(",
+      "model": "glowglyph_punct_left_paren",
+      "width": 0.4095151424407959,
+      "height": 1.424127221107483,
+      "baseline": 0.0,
+      "advance": 0.45
+    },
+    {
+      "character": ")",
+      "model": "glowglyph_punct_right_paren",
+      "width": 0.41805267333984375,
+      "height": 1.4236450493335724,
+      "baseline": 0.0,
+      "advance": 0.45
+    },
+    {
+      "character": "&",
+      "model": "glowglyph_punct_ampersand",
+      "width": 0.8284883499145508,
+      "height": 1.0276282094419003,
+      "baseline": 0.0,
+      "advance": 0.75
+    },
+    {
+      "character": "+",
+      "model": "glowglyph_punct_plus",
+      "width": 0.6988474130630493,
+      "height": 0.7396148294210434,
+      "baseline": 0.0,
+      "advance": 0.72
+    },
+    {
+      "character": "=",
+      "model": "glowglyph_punct_equals",
+      "width": 0.6646553874015808,
+      "height": 0.4759419560432434,
+      "baseline": 0.0,
+      "advance": 0.72
+    },
+    {
+      "character": "@",
+      "model": "glowglyph_punct_at",
+      "width": 0.7849639654159546,
+      "height": 0.9960705302655697,
+      "baseline": 0.0,
+      "advance": 0.9
+    },
+    {
+      "character": "#",
+      "model": "glowglyph_punct_hash",
+      "width": 0.7764369249343872,
+      "height": 1.0000000204890966,
+      "baseline": 0.0,
+      "advance": 0.72
+    },
+    {
+      "character": "%",
+      "model": "glowglyph_punct_percent",
+      "width": 0.804053544998169,
+      "height": 1.0269738174974918,
+      "baseline": 0.0,
+      "advance": 0.8
+    },
+    {
+      "character": "*",
+      "model": "glowglyph_punct_asterisk",
+      "width": 0.7272461652755737,
+      "height": 0.7278408706188202,
+      "baseline": 0.0,
+      "advance": 0.55
+    },
+    {
+      "character": "<",
+      "model": "glowglyph_punct_less_than",
+      "width": 0.6245455741882324,
+      "height": 0.6943989247083664,
+      "baseline": 0.0,
+      "advance": 0.72
+    },
+    {
+      "character": ">",
+      "model": "glowglyph_punct_greater_than",
+      "width": 0.634408712387085,
+      "height": 0.6946171633899212,
+      "baseline": 0.0,
+      "advance": 0.72
+    },
+    {
+      "character": "\u2190",
+      "model": "glowglyph_punct_arrow_left",
+      "width": 1.1158932447433472,
+      "height": 0.9190549254417419,
+      "baseline": 0.0,
+      "advance": 1.0
+    },
+    {
+      "character": "\u2192",
+      "model": "glowglyph_punct_arrow_right",
+      "width": 1.1158932447433472,
+      "height": 0.9190549254417419,
+      "baseline": 0.0,
+      "advance": 1.0
+    },
+    {
+      "character": "\u2191",
+      "model": "glowglyph_punct_arrow_up",
+      "width": 0.9190549254417419,
+      "height": 1.11589315533638,
+      "baseline": 0.0,
+      "advance": 0.8
+    },
+    {
+      "character": "\u2193",
+      "model": "glowglyph_punct_arrow_down",
+      "width": 0.9190549254417419,
+      "height": 1.1158932447433472,
+      "baseline": 0.0,
+      "advance": 0.8
+    }
+  ]
+}

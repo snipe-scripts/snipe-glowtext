@@ -1,0 +1,138 @@
+<!doctype html>
+<html lang="en" class="nui-loading">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Glow Text</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <main id="app" class="app" hidden>
+        <header class="toolbar">
+            <div>
+                <div class="title">Glow text</div>
+                <div class="subtitle">Create and manage persistent world lettering</div>
+            </div>
+            <button id="close" class="icon-button" type="button" aria-label="Close">×</button>
+        </header>
+
+        <div class="workspace">
+            <section class="form-panel">
+                <form id="placement-form">
+                    <input id="placement-id" type="hidden">
+
+                    <label for="text">Text</label>
+                    <textarea id="text" rows="4" maxlength="128" spellcheck="false" required></textarea>
+                    <div class="symbol-toolbar" role="group" aria-label="Insert symbol">
+                        <span>Insert</span>
+                        <button type="button" data-symbol="←" aria-label="Insert left arrow" title="Left arrow">←</button>
+                        <button type="button" data-symbol="→" aria-label="Insert right arrow" title="Right arrow">→</button>
+                        <button type="button" data-symbol="↑" aria-label="Insert up arrow" title="Up arrow">↑</button>
+                        <button type="button" data-symbol="↓" aria-label="Insert down arrow" title="Down arrow">↓</button>
+                        <button type="button" data-symbol="&lt;" aria-label="Insert less than" title="Less than">&lt;</button>
+                        <button type="button" data-symbol="&gt;" aria-label="Insert greater than" title="Greater than">&gt;</button>
+                    </div>
+                    <div id="text-count" class="field-note">0 / 64 glyphs</div>
+
+                    <div class="preview-toolbar">
+                        <label id="character-preview-label">Character preview</label>
+                        <div class="preview-actions">
+                            <button id="select-all-glyphs" type="button">Select all</button>
+                            <button id="clear-glyph-selection" type="button">Clear</button>
+                        </div>
+                    </div>
+                    <div id="glyph-preview" class="glyph-preview" role="listbox" aria-labelledby="character-preview-label" aria-multiselectable="true"></div>
+                    <div id="glyph-selection-note" class="selection-note">No characters selected</div>
+
+                    <div class="field-grid">
+                        <div>
+                            <label for="layout">Layout</label>
+                            <select id="layout">
+                                <option value="horizontal">Horizontal</option>
+                                <option value="vertical">Vertical</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label for="alignment">Alignment</label>
+                            <select id="alignment">
+                                <option value="left">Left</option>
+                                <option value="center">Center</option>
+                                <option value="right">Right</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label id="scale-label" for="scale">Starting size</label>
+                            <input id="scale" type="number" min="0.1" step="0.05">
+                        </div>
+                        <div>
+                            <label for="spacing">Glyph spacing</label>
+                            <input id="spacing" type="number" min="-0.4" max="2" step="0.01">
+                        </div>
+                        <div>
+                            <label id="line-spacing-label" for="line-spacing">Line spacing</label>
+                            <input id="line-spacing" type="number" min="0" max="3" step="0.01">
+                        </div>
+                    </div>
+
+                    <div class="label-row">
+                        <div>
+                            <label>Colour</label>
+                            <div class="palette-note">Applies to selected characters</div>
+                        </div>
+                        <span id="tint-name">White</span>
+                    </div>
+                    <div id="palette" class="palette" role="radiogroup" aria-label="Surface tint"></div>
+
+                    <label class="check-row" for="light-enabled">
+                        <input id="light-enabled" type="checkbox" checked>
+                        <span>Enable glow</span>
+                    </label>
+
+                    <div id="form-status" class="status" role="status"></div>
+                    <div class="form-actions">
+                        <button id="reset" class="secondary-button" type="button">Clear edit</button>
+                        <button id="save-changes" class="save-button" type="button" hidden>Save changes</button>
+                        <button id="submit" class="primary-button" type="submit">Place with gizmo</button>
+                    </div>
+                </form>
+            </section>
+
+            <section class="list-panel">
+                <div class="list-toolbar">
+                    <div class="section-title">Placed text</div>
+                    <input id="search" type="search" placeholder="Search text or ID">
+                </div>
+                <div id="placement-list" class="placement-list"></div>
+                <div id="empty-state" class="empty-state">No saved placements.</div>
+            </section>
+        </div>
+
+        <div id="delete-modal" class="modal-backdrop" role="presentation" hidden>
+            <section class="confirm-modal" role="dialog" aria-modal="true" aria-labelledby="delete-title" aria-describedby="delete-description">
+                <div id="delete-title" class="modal-title">Delete placement?</div>
+                <p id="delete-description" class="modal-copy"></p>
+                <div class="modal-actions">
+                    <button id="delete-cancel" class="secondary-button" type="button">Cancel</button>
+                    <button id="delete-confirm" class="danger-button" type="button">Delete</button>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <aside id="editor-help" class="editor-help" hidden>
+        <div class="editor-title">Placement mode</div>
+        <div class="key-grid">
+            <kbd>T</kbd><span>Move</span>
+            <kbd>R</kbd><span>Rotate</span>
+            <kbd>S</kbd><span>Scale</span>
+            <kbd>L</kbd><span>Local / world</span>
+            <kbd>Alt</kbd><span id="cursor-label">Camera mode</span>
+            <kbd>Enter</kbd><span>Save</span>
+            <kbd>Backspace</kbd><span>Cancel</span>
+        </div>
+        <div class="camera-note">Camera mode: WASD, E/Q, Shift and mouse</div>
+    </aside>
+
+    <script src="app.js"></script>
+</body>
+</html>
