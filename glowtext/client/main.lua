@@ -167,6 +167,13 @@ local function rgbTintForGlyph(record, glyphIndex, timeMs)
     return palette[paletteIndex]
 end
 
+local function spinAxisForGlyph(record, glyphIndex)
+    local axis = type(record.glyphSpinAxes) == 'table' and record.glyphSpinAxes[glyphIndex] or nil
+    if axis == 'x' or axis == 'y' or axis == 'z' then return axis end
+    if type(record.glyphSpins) == 'table' and record.glyphSpins[glyphIndex] == true then return 'x' end
+    return nil
+end
+
 local function buildGlyphLayout(record)
     local result = {}
     local spacing = tonumber(record.spacing) or Config.Defaults.spacing
@@ -279,6 +286,35 @@ local function initialMatrix(scale)
     })
 end
 
+local function applyGlyphTransform(entity, glyph)
+    if not DoesEntityExist(entity) or not glyph.basePosition then return end
+    local angle = glyph.spinAngle or 0.0
+    local cosine = math.cos(angle)
+    local sine = math.sin(angle)
+    local right = glyph.baseRight
+    local forward = glyph.baseForward
+    local up = glyph.baseUp
+    local position = glyph.basePosition
+
+    if glyph.spinAxis == 'x' then
+        forward = (glyph.baseForward * cosine) + (glyph.baseUp * sine)
+        up = (glyph.baseUp * cosine) - (glyph.baseForward * sine)
+    elseif glyph.spinAxis == 'y' then
+        right = (glyph.baseRight * cosine) + (glyph.baseForward * sine)
+        forward = (glyph.baseForward * cosine) - (glyph.baseRight * sine)
+    elseif glyph.spinAxis == 'z' then
+        right = (glyph.baseRight * cosine) + (glyph.baseUp * sine)
+        up = (glyph.baseUp * cosine) - (glyph.baseRight * sine)
+    end
+
+    SetEntityMatrix(entity,
+        forward.x, forward.y, forward.z,
+        right.x, right.y, right.z,
+        up.x, up.y, up.z,
+        position.x, position.y, position.z
+    )
+end
+
 local function applyGroupMatrix(entities, glyphs, view)
     local right = vector3(view:GetFloat32(0), view:GetFloat32(4), view:GetFloat32(8))
     local forward = vector3(view:GetFloat32(16), view:GetFloat32(20), view:GetFloat32(24))
@@ -290,12 +326,11 @@ local function applyGroupMatrix(entities, glyphs, view)
         local glyph = glyphs[i]
         if DoesEntityExist(entity) and glyph then
             local position = origin + (right * glyph.x) + (forward * glyph.y) + (up * glyph.z)
-            SetEntityMatrix(entity,
-                forward.x, forward.y, forward.z,
-                right.x, right.y, right.z,
-                up.x, up.y, up.z,
-                position.x, position.y, position.z
-            )
+            glyph.baseRight = right
+            glyph.baseForward = forward
+            glyph.baseUp = up
+            glyph.basePosition = position
+            applyGlyphTransform(entity, glyph)
         end
     end
 end
@@ -423,6 +458,35 @@ local function updateRgbGroup(entities, glyphs, record, timeMs)
     return true
 end
 
+local function updateSpinGroup(entities, glyphs, record, timeMs)
+    if type(record.glyphSpinAxes) ~= 'table' and type(record.glyphSpins) ~= 'table' then return false end
+    local frequency = boundedNumber(
+        record.spinFrequency,
+        Config.SpinEffect.minFrequency,
+        Config.SpinEffect.maxFrequency,
+        Config.Defaults.spinFrequency
+    )
+    local angle = (((timeMs / 1000.0) * frequency) % 1.0) * math.pi * 2.0
+    local active = false
+
+    for i = 1, #entities do
+        local entity = entities[i]
+        local glyph = glyphs[i]
+        local axis = spinAxisForGlyph(record, i)
+        if glyph and axis then
+            active = true
+            glyph.spinAxis = axis
+            glyph.spinAngle = angle
+            applyGlyphTransform(entity, glyph)
+        elseif glyph and (glyph.spinAxis or (glyph.spinAngle and glyph.spinAngle ~= 0.0)) then
+            glyph.spinAxis = nil
+            glyph.spinAngle = 0.0
+            applyGlyphTransform(entity, glyph)
+        end
+    end
+    return active
+end
+
 local function spawnPlacement(id, record)
     if spawned[id] then return end
     local pending = { loading = true, entities = {} }
@@ -460,6 +524,7 @@ local function openAdmin(records)
         defaults = Config.Defaults,
         palette = Config.Palette,
         rgbEffect = Config.RgbEffect,
+        spinEffect = Config.SpinEffect,
         limits = { maxTextLength = Config.MaxTextLength, maxGlyphs = Config.MaxGlyphs }
     })
 end
@@ -570,9 +635,15 @@ local function startEditor(settings)
 
     local fallbackTint = math.max(0, math.min(15, math.floor(tonumber(settings.tint) or 0)))
     local glyphTints = {}
+    local glyphSpinAxes = {}
     for i = 1, glyphCount do
         local value = type(settings.glyphTints) == 'table' and settings.glyphTints[i] or fallbackTint
         glyphTints[i] = math.max(0, math.min(15, math.floor(tonumber(value) or fallbackTint)))
+        local axis = type(settings.glyphSpinAxes) == 'table' and settings.glyphSpinAxes[i] or nil
+        if axis ~= 'x' and axis ~= 'y' and axis ~= 'z' then
+            axis = type(settings.glyphSpins) == 'table' and settings.glyphSpins[i] == true and 'x' or 'none'
+        end
+        glyphSpinAxes[i] = axis
     end
 
     editorSettings = {
@@ -596,6 +667,13 @@ local function startEditor(settings)
             Config.RgbEffect.minSpread,
             Config.RgbEffect.maxSpread,
             Config.Defaults.rgbSpread
+        ),
+        glyphSpinAxes = glyphSpinAxes,
+        spinFrequency = boundedNumber(
+            settings.spinFrequency,
+            Config.SpinEffect.minFrequency,
+            Config.SpinEffect.maxFrequency,
+            Config.Defaults.spinFrequency
         ),
     }
 
@@ -714,18 +792,27 @@ RegisterKeyMapping('+gizmoLocal', 'Glow Text gizmo: local/world axes', 'keyboard
 
 CreateThread(function()
     while true do
-        local active = false
+        local rgbActive = false
+        local spinActive = false
         local timeMs = GetGameTimer()
         for id, group in pairs(spawned) do
             local record = placements[id]
             if record and not group.loading then
-                active = updateRgbGroup(group.entities or {}, group.glyphs or {}, record, timeMs) or active
+                rgbActive = updateRgbGroup(group.entities or {}, group.glyphs or {}, record, timeMs) or rgbActive
+                spinActive = updateSpinGroup(group.entities or {}, group.glyphs or {}, record, timeMs) or spinActive
             end
         end
         if editorActive and editorSettings then
-            active = updateRgbGroup(editorEntities, editorGlyphs, editorSettings, timeMs) or active
+            rgbActive = updateRgbGroup(editorEntities, editorGlyphs, editorSettings, timeMs) or rgbActive
+            spinActive = updateSpinGroup(editorEntities, editorGlyphs, editorSettings, timeMs) or spinActive
         end
-        Wait(active and Config.RgbEffect.updateInterval or 250)
+        if spinActive then
+            Wait(Config.SpinEffect.updateInterval)
+        elseif rgbActive then
+            Wait(Config.RgbEffect.updateInterval)
+        else
+            Wait(250)
+        end
     end
 end)
 

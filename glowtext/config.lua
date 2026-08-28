@@ -22,6 +22,12 @@ Config.RgbEffect = {
     palette = { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12 },
 }
 
+Config.SpinEffect = {
+    updateInterval = 33,
+    minFrequency = 0.05,
+    maxFrequency = 2.00,
+}
+
 Config.WorldBounds = {
     minX = -10000.0,
     maxX = 10000.0,
@@ -43,6 +49,7 @@ Config.Defaults = {
     rgbEnabled = false,
     rgbFrequency = 0.50,
     rgbSpread = 30,
+    spinFrequency = 0.25,
 }
 
 Config.Palette = {

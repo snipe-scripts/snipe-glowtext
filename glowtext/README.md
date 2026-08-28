@@ -65,6 +65,15 @@ RGB settings are stored inside the existing `glyph_tints_json` value, so this up
 does not add database columns or require a migration. Placements saved by older
 versions continue to load with RGB disabled.
 
+`Spin selected characters` enables an in-place animation for the characters selected
+in the preview. Choose the local X, Y or Z axis for each selected glyph; the animated
+character preview shows how that axis will turn in game. Each glyph rotates around
+its own centre while its world position and the placement's group transform remain
+unchanged. `Frequency` controls the number of full rotations per second. Select one
+character, Ctrl + left-click a set, or select all before changing the option. Mixed
+selections and mixed axes are shown as `Mixed`. Spin settings share the existing
+appearance JSON, so they also require no migration. Older enabled spins load as X.
+
 When editing an existing placement, `Save changes` updates its content and appearance
 while preserving the saved transform. Use `Update with gizmo` only when the placement
 also needs to be moved, rotated or scaled.

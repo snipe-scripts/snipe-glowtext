@@ -4,7 +4,7 @@ lua54 'yes'
 
 author 'SnipeOPGaming / OpenAI'
 description 'Standalone persistent glow-glyph text placement'
-version '1.1.0'
+version '1.2.0'
 
 dependencies {
     'glowglyphs',

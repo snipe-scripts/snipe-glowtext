@@ -281,7 +281,8 @@ input:disabled { opacity: .65; cursor: not-allowed; }
 .check-row { display: flex; align-items: center; gap: 9px; margin: 0 0 14px; cursor: pointer; }
 .check-row input { width: 16px; height: 16px; accent-color: var(--accent); }
 
-.rgb-effect {
+.rgb-effect,
+.spin-effect {
     margin: -2px 0 14px;
     padding: 11px 12px 12px;
     border: 1px solid var(--border);
@@ -292,12 +293,38 @@ input:disabled { opacity: .65; cursor: not-allowed; }
 .rgb-effect .check-row { margin-bottom: 10px; }
 .rgb-controls { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
 .rgb-controls.disabled { opacity: .45; }
+.effect-heading { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.effect-heading .check-row { margin: 0; }
+.effect-heading > span { color: var(--muted); font-size: 11px; }
+.spin-controls { display: grid; grid-template-columns: minmax(0, 1fr) 116px; align-items: end; gap: 12px; margin-top: 10px; }
+.spin-controls.disabled { opacity: .45; }
+.effect-note { grid-column: 1 / -1; margin-top: -5px; color: var(--muted); font-size: 11px; }
 .range-field { min-width: 0; }
 .range-label { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
 .range-label label { margin: 0; font-size: 12px; }
-.range-label output { color: var(--muted); font-size: 11px; white-space: nowrap; }
+.range-label output,
+.range-label > span { color: var(--muted); font-size: 11px; white-space: nowrap; }
+.range-label .field-label { color: var(--text); font-size: 12px; font-weight: 600; }
 input[type="range"] { width: 100%; height: 22px; margin: 3px 0 0; accent-color: var(--accent); }
 input[type="range"]:disabled { cursor: not-allowed; }
+.axis-buttons { display: grid; grid-template-columns: repeat(3, 1fr); gap: 5px; margin-top: 6px; }
+.axis-buttons button {
+    min-width: 0;
+    height: 28px;
+    padding: 0;
+    border: 1px solid #444;
+    border-radius: 5px;
+    background: #222;
+    color: var(--muted);
+    font-size: 12px;
+    font-weight: 700;
+}
+.axis-buttons button:hover:not(:disabled) { border-color: #686868; color: var(--text); }
+.axis-buttons button[aria-pressed="true"] { border-color: var(--accent); background: rgba(217, 119, 6, .14); color: #f0b15d; }
+.axis-buttons button:disabled { cursor: not-allowed; }
+
+.preview-line { perspective: 700px; }
+.preview-glyph { transform-style: preserve-3d; transform-origin: 50% 50%; will-change: transform; }
 
 .status { min-height: 20px; margin-bottom: 8px; color: var(--muted); font-size: 12px; }
 .status.error { color: #ef8585; }

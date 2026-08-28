@@ -116,6 +116,20 @@ local function normalizeGlyphTints(raw, glyphCount, fallbackTint)
     return result
 end
 
+local function normalizeGlyphSpinAxes(rawAxes, rawFlags, glyphCount)
+    local result = {}
+    local validAxes = type(rawAxes) == 'table' and #rawAxes == glyphCount
+    local validFlags = type(rawFlags) == 'table' and #rawFlags == glyphCount
+    for i = 1, glyphCount do
+        local axis = validAxes and tostring(rawAxes[i] or 'none'):lower() or 'none'
+        if axis ~= 'x' and axis ~= 'y' and axis ~= 'z' then
+            axis = validFlags and rawFlags[i] == true and 'x' or 'none'
+        end
+        result[i] = axis
+    end
+    return result
+end
+
 local function vectorLength(x, y, z)
     return math.sqrt(x * x + y * y + z * z)
 end
@@ -185,6 +199,8 @@ local function validatePayload(payload)
     local glyphTints = normalizeGlyphTints(payload.glyphTints, glyphCount, tint)
     local rgbFrequency = tonumber(payload.rgbFrequency) or Config.Defaults.rgbFrequency
     local rgbSpread = tonumber(payload.rgbSpread) or Config.Defaults.rgbSpread
+    local glyphSpinAxes = normalizeGlyphSpinAxes(payload.glyphSpinAxes, payload.glyphSpins, glyphCount)
+    local spinFrequency = tonumber(payload.spinFrequency) or Config.Defaults.spinFrequency
     if not finiteNumber(rgbFrequency)
         or rgbFrequency < Config.RgbEffect.minFrequency
         or rgbFrequency > Config.RgbEffect.maxFrequency then
@@ -199,6 +215,14 @@ local function validatePayload(payload)
         return nil, ('RGB character spread must be between %d and %d degrees.'):format(
             Config.RgbEffect.minSpread,
             Config.RgbEffect.maxSpread
+        )
+    end
+    if not finiteNumber(spinFrequency)
+        or spinFrequency < Config.SpinEffect.minFrequency
+        or spinFrequency > Config.SpinEffect.maxFrequency then
+        return nil, ('Spin frequency must be between %.2f and %.2f Hz.'):format(
+            Config.SpinEffect.minFrequency,
+            Config.SpinEffect.maxFrequency
         )
     end
     local matrix, matrixError = validateMatrix(payload.matrix)
@@ -216,6 +240,8 @@ local function validatePayload(payload)
         rgbEnabled = payload.rgbEnabled == true,
         rgbFrequency = rgbFrequency + 0.0,
         rgbSpread = rgbSpread + 0.0,
+        glyphSpinAxes = glyphSpinAxes,
+        spinFrequency = spinFrequency + 0.0,
         matrix = matrix,
     }
 end
@@ -229,12 +255,14 @@ local function rowToRecord(row)
     local tint = clampInteger(row.tint, 0, #Config.Palette - 1)
     local glyphTintData
     local rgbData
+    local spinData
     if type(row.glyph_tints_json) == 'string' and row.glyph_tints_json ~= '' then
         local tintOk, decoded = pcall(json.decode, row.glyph_tints_json)
         if tintOk and type(decoded) == 'table' then
             if type(decoded.tints) == 'table' then
                 glyphTintData = decoded.tints
                 rgbData = decoded.rgb
+                spinData = decoded.spin
             else
                 -- Backwards compatibility for rows saved as a plain tint array.
                 glyphTintData = decoded
@@ -264,6 +292,17 @@ local function rowToRecord(row)
             Config.RgbEffect.minSpread,
             Config.RgbEffect.maxSpread,
             Config.Defaults.rgbSpread
+        ),
+        glyphSpinAxes = normalizeGlyphSpinAxes(
+            type(spinData) == 'table' and spinData.axes or nil,
+            type(spinData) == 'table' and spinData.glyphs or nil,
+            glyphCount
+        ),
+        spinFrequency = clampNumber(
+            type(spinData) == 'table' and spinData.frequency or nil,
+            Config.SpinEffect.minFrequency,
+            Config.SpinEffect.maxFrequency,
+            Config.Defaults.spinFrequency
         ),
         matrix = matrix,
         createdBy = row.created_by,
@@ -303,6 +342,8 @@ local function publicRecord(record)
         rgbEnabled = record.rgbEnabled,
         rgbFrequency = record.rgbFrequency,
         rgbSpread = record.rgbSpread,
+        glyphSpinAxes = record.glyphSpinAxes,
+        spinFrequency = record.spinFrequency,
         matrix = record.matrix,
         createdAt = record.createdAt,
         updatedAt = record.updatedAt,
@@ -322,6 +363,10 @@ local function databaseValues(record, identifier)
             enabled = record.rgbEnabled,
             frequency = record.rgbFrequency,
             spread = record.rgbSpread,
+        },
+        spin = {
+            axes = record.glyphSpinAxes,
+            frequency = record.spinFrequency,
         },
     }
     return {
