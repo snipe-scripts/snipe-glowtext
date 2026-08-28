@@ -88,6 +88,29 @@
                         <span>Enable glow</span>
                     </label>
 
+                    <section class="rgb-effect" aria-labelledby="rgb-effect-label">
+                        <label id="rgb-effect-label" class="check-row" for="rgb-enabled">
+                            <input id="rgb-enabled" type="checkbox">
+                            <span>Enable RGB effect</span>
+                        </label>
+                        <div id="rgb-controls" class="rgb-controls">
+                            <div class="range-field">
+                                <div class="range-label">
+                                    <label for="rgb-frequency">Frequency</label>
+                                    <output id="rgb-frequency-value" for="rgb-frequency">0.50 Hz</output>
+                                </div>
+                                <input id="rgb-frequency" type="range" min="0.05" max="3" step="0.05" value="0.5">
+                            </div>
+                            <div class="range-field">
+                                <div class="range-label">
+                                    <label for="rgb-spread">Character spread</label>
+                                    <output id="rgb-spread-value" for="rgb-spread">30°</output>
+                                </div>
+                                <input id="rgb-spread" type="range" min="0" max="360" step="5" value="30">
+                            </div>
+                        </div>
+                    </section>
+
                     <div id="form-status" class="status" role="status"></div>
                     <div class="form-actions">
                         <button id="reset" class="secondary-button" type="button">Clear edit</button>

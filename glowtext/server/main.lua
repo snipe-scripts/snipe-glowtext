@@ -74,6 +74,14 @@ local function clampInteger(value, minimum, maximum)
     return value
 end
 
+local function clampNumber(value, minimum, maximum, fallback)
+    value = tonumber(value)
+    if not finiteNumber(value) then value = fallback end
+    if value < minimum then value = minimum end
+    if value > maximum then value = maximum end
+    return value + 0.0
+end
+
 local function utf8Characters(value)
     local result = {}
     local ok = pcall(function()
@@ -175,6 +183,24 @@ local function validatePayload(payload)
 
     local tint = clampInteger(payload.tint, 0, #Config.Palette - 1)
     local glyphTints = normalizeGlyphTints(payload.glyphTints, glyphCount, tint)
+    local rgbFrequency = tonumber(payload.rgbFrequency) or Config.Defaults.rgbFrequency
+    local rgbSpread = tonumber(payload.rgbSpread) or Config.Defaults.rgbSpread
+    if not finiteNumber(rgbFrequency)
+        or rgbFrequency < Config.RgbEffect.minFrequency
+        or rgbFrequency > Config.RgbEffect.maxFrequency then
+        return nil, ('RGB frequency must be between %.2f and %.2f Hz.'):format(
+            Config.RgbEffect.minFrequency,
+            Config.RgbEffect.maxFrequency
+        )
+    end
+    if not finiteNumber(rgbSpread)
+        or rgbSpread < Config.RgbEffect.minSpread
+        or rgbSpread > Config.RgbEffect.maxSpread then
+        return nil, ('RGB character spread must be between %d and %d degrees.'):format(
+            Config.RgbEffect.minSpread,
+            Config.RgbEffect.maxSpread
+        )
+    end
     local matrix, matrixError = validateMatrix(payload.matrix)
     if not matrix then return nil, matrixError end
 
@@ -187,6 +213,9 @@ local function validatePayload(payload)
         tint = tint,
         glyphTints = glyphTints,
         lightEnabled = payload.lightEnabled == true,
+        rgbEnabled = payload.rgbEnabled == true,
+        rgbFrequency = rgbFrequency + 0.0,
+        rgbSpread = rgbSpread + 0.0,
         matrix = matrix,
     }
 end
@@ -199,9 +228,18 @@ local function rowToRecord(row)
     end
     local tint = clampInteger(row.tint, 0, #Config.Palette - 1)
     local glyphTintData
+    local rgbData
     if type(row.glyph_tints_json) == 'string' and row.glyph_tints_json ~= '' then
         local tintOk, decoded = pcall(json.decode, row.glyph_tints_json)
-        if tintOk then glyphTintData = decoded end
+        if tintOk and type(decoded) == 'table' then
+            if type(decoded.tints) == 'table' then
+                glyphTintData = decoded.tints
+                rgbData = decoded.rgb
+            else
+                -- Backwards compatibility for rows saved as a plain tint array.
+                glyphTintData = decoded
+            end
+        end
     end
     local glyphCount = visibleGlyphCount(tostring(row.text or '')) or 0
     return {
@@ -214,6 +252,19 @@ local function rowToRecord(row)
         tint = tint,
         glyphTints = normalizeGlyphTints(glyphTintData, glyphCount, tint),
         lightEnabled = row.light_enabled == true or tonumber(row.light_enabled) == 1,
+        rgbEnabled = type(rgbData) == 'table' and rgbData.enabled == true or false,
+        rgbFrequency = clampNumber(
+            type(rgbData) == 'table' and rgbData.frequency or nil,
+            Config.RgbEffect.minFrequency,
+            Config.RgbEffect.maxFrequency,
+            Config.Defaults.rgbFrequency
+        ),
+        rgbSpread = clampNumber(
+            type(rgbData) == 'table' and rgbData.spread or nil,
+            Config.RgbEffect.minSpread,
+            Config.RgbEffect.maxSpread,
+            Config.Defaults.rgbSpread
+        ),
         matrix = matrix,
         createdBy = row.created_by,
         updatedBy = row.updated_by,
@@ -249,6 +300,9 @@ local function publicRecord(record)
         tint = record.tint,
         glyphTints = record.glyphTints,
         lightEnabled = record.lightEnabled,
+        rgbEnabled = record.rgbEnabled,
+        rgbFrequency = record.rgbFrequency,
+        rgbSpread = record.rgbSpread,
         matrix = record.matrix,
         createdAt = record.createdAt,
         updatedAt = record.updatedAt,
@@ -262,9 +316,17 @@ local function publicPlacements()
 end
 
 local function databaseValues(record, identifier)
+    local appearance = {
+        tints = record.glyphTints,
+        rgb = {
+            enabled = record.rgbEnabled,
+            frequency = record.rgbFrequency,
+            spread = record.rgbSpread,
+        },
+    }
     return {
         record.text, record.layout, record.alignment, record.spacing, record.lineSpacing,
-        record.tint, json.encode(record.glyphTints), record.lightEnabled and 1 or 0,
+        record.tint, json.encode(appearance), record.lightEnabled and 1 or 0,
         json.encode(record.matrix), identifier,
     }
 end

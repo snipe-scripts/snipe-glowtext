@@ -138,6 +138,35 @@ local function tintForGlyph(record, glyphIndex)
     return math.max(0, math.min(15, math.floor(tonumber(value) or tonumber(record.tint) or 0)))
 end
 
+local function boundedNumber(value, minimum, maximum, fallback)
+    value = tonumber(value) or fallback
+    if value ~= value or value == math.huge or value == -math.huge then value = fallback end
+    return math.max(minimum, math.min(maximum, value))
+end
+
+local function rgbTintForGlyph(record, glyphIndex, timeMs)
+    if record.rgbEnabled ~= true then return nil end
+    local settings = Config.RgbEffect
+    local palette = settings and settings.palette
+    if type(palette) ~= 'table' or #palette == 0 then return nil end
+
+    local frequency = boundedNumber(
+        record.rgbFrequency,
+        settings.minFrequency,
+        settings.maxFrequency,
+        Config.Defaults.rgbFrequency
+    )
+    local spread = boundedNumber(
+        record.rgbSpread,
+        settings.minSpread,
+        settings.maxSpread,
+        Config.Defaults.rgbSpread
+    )
+    local cycle = ((timeMs / 1000.0) * frequency) + (((glyphIndex - 1) * spread) / 360.0)
+    local paletteIndex = math.floor((cycle % 1.0) * #palette) + 1
+    return palette[paletteIndex]
+end
+
 local function buildGlyphLayout(record)
     local result = {}
     local spacing = tonumber(record.spacing) or Config.Defaults.spacing
@@ -342,6 +371,7 @@ local function createGlyphGroup(record, preview)
     local entities = {}
     local matrix = matrixFromArray(record.matrix)
     local origin = vector3(record.matrix[10], record.matrix[11], record.matrix[12])
+    local initialTime = GetGameTimer()
 
     for i = 1, #glyphs do
         local glyph = glyphs[i]
@@ -364,7 +394,9 @@ local function createGlyphGroup(record, preview)
         SetEntityLights(entity, true)
         FreezeEntityPosition(entity, true)
         SetEntityLodDist(entity, 500)
-        SetObjectTextureVariation(entity, glyph.tint)
+        local appliedTint = rgbTintForGlyph(record, i, initialTime) or glyph.tint
+        SetObjectTextureVariation(entity, appliedTint)
+        glyph.appliedTint = appliedTint
         if preview then
             SetEntityDrawOutlineColor(217, 119, 6, 220)
             SetEntityDrawOutline(entity, true)
@@ -375,6 +407,20 @@ local function createGlyphGroup(record, preview)
 
     applyGroupMatrix(entities, glyphs, matrix)
     return entities, glyphs
+end
+
+local function updateRgbGroup(entities, glyphs, record, timeMs)
+    if record.rgbEnabled ~= true then return false end
+    for i = 1, #entities do
+        local entity = entities[i]
+        local glyph = glyphs[i]
+        local tint = glyph and rgbTintForGlyph(record, i, timeMs) or nil
+        if tint and DoesEntityExist(entity) and glyph.appliedTint ~= tint then
+            SetObjectTextureVariation(entity, tint)
+            glyph.appliedTint = tint
+        end
+    end
+    return true
 end
 
 local function spawnPlacement(id, record)
@@ -413,6 +459,7 @@ local function openAdmin(records)
         records = placementArray(),
         defaults = Config.Defaults,
         palette = Config.Palette,
+        rgbEffect = Config.RgbEffect,
         limits = { maxTextLength = Config.MaxTextLength, maxGlyphs = Config.MaxGlyphs }
     })
 end
@@ -537,6 +584,19 @@ local function startEditor(settings)
         tint = fallbackTint,
         glyphTints = glyphTints,
         lightEnabled = settings.lightEnabled == true,
+        rgbEnabled = settings.rgbEnabled == true,
+        rgbFrequency = boundedNumber(
+            settings.rgbFrequency,
+            Config.RgbEffect.minFrequency,
+            Config.RgbEffect.maxFrequency,
+            Config.Defaults.rgbFrequency
+        ),
+        rgbSpread = boundedNumber(
+            settings.rgbSpread,
+            Config.RgbEffect.minSpread,
+            Config.RgbEffect.maxSpread,
+            Config.Defaults.rgbSpread
+        ),
     }
 
     if editingId then
@@ -651,6 +711,23 @@ RegisterKeyMapping('+gizmoRotation', 'Glow Text gizmo: rotate', 'keyboard', 'R')
 RegisterKeyMapping('+gizmoScale', 'Glow Text gizmo: scale', 'keyboard', 'S')
 RegisterKeyMapping('+gizmoSelect', 'Glow Text gizmo: select handle', 'MOUSE_BUTTON', 'MOUSE_LEFT')
 RegisterKeyMapping('+gizmoLocal', 'Glow Text gizmo: local/world axes', 'keyboard', 'L')
+
+CreateThread(function()
+    while true do
+        local active = false
+        local timeMs = GetGameTimer()
+        for id, group in pairs(spawned) do
+            local record = placements[id]
+            if record and not group.loading then
+                active = updateRgbGroup(group.entities or {}, group.glyphs or {}, record, timeMs) or active
+            end
+        end
+        if editorActive and editorSettings then
+            active = updateRgbGroup(editorEntities, editorGlyphs, editorSettings, timeMs) or active
+        end
+        Wait(active and Config.RgbEffect.updateInterval or 250)
+    end
+end)
 
 CreateThread(function()
     -- Remove local glyph objects left behind by a previous script instance.

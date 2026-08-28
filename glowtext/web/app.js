@@ -16,6 +16,12 @@ const spacing = document.getElementById('spacing');
 const lineSpacing = document.getElementById('line-spacing');
 const lineSpacingLabel = document.getElementById('line-spacing-label');
 const lightEnabled = document.getElementById('light-enabled');
+const rgbEnabled = document.getElementById('rgb-enabled');
+const rgbControls = document.getElementById('rgb-controls');
+const rgbFrequency = document.getElementById('rgb-frequency');
+const rgbFrequencyValue = document.getElementById('rgb-frequency-value');
+const rgbSpread = document.getElementById('rgb-spread');
+const rgbSpreadValue = document.getElementById('rgb-spread-value');
 const paletteElement = document.getElementById('palette');
 const tintName = document.getElementById('tint-name');
 const status = document.getElementById('form-status');
@@ -35,6 +41,13 @@ let records = [];
 let palette = [];
 let defaults = {};
 let limits = { maxGlyphs: 64, maxTextLength: 128 };
+let rgbConfig = {
+    minFrequency: 0.05,
+    maxFrequency: 3,
+    minSpread: 0,
+    maxSpread: 360,
+    palette: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12],
+};
 let selectedTint = 0;
 let glyphTints = [];
 let selectedGlyphIndices = new Set();
@@ -69,6 +82,44 @@ const updateCount = () => {
     const count = visibleGlyphCount();
     textCount.textContent = `${count} / ${limits.maxGlyphs} glyphs`;
     textCount.style.color = count > limits.maxGlyphs ? '#ef8585' : '';
+};
+
+const updateRgbControlState = () => {
+    const enabled = rgbEnabled.checked;
+    rgbFrequency.disabled = !enabled;
+    rgbSpread.disabled = !enabled;
+    rgbControls.classList.toggle('disabled', !enabled);
+};
+
+const updateRgbControlValues = () => {
+    rgbFrequencyValue.textContent = `${Number(rgbFrequency.value).toFixed(2)} Hz`;
+    rgbSpreadValue.textContent = `${Math.round(Number(rgbSpread.value))}°`;
+};
+
+const configureRgbControls = () => {
+    rgbFrequency.min = String(rgbConfig.minFrequency ?? 0.05);
+    rgbFrequency.max = String(rgbConfig.maxFrequency ?? 3);
+    rgbSpread.min = String(rgbConfig.minSpread ?? 0);
+    rgbSpread.max = String(rgbConfig.maxSpread ?? 360);
+};
+
+const rgbTintForGlyph = (glyphIndex, timeMs = performance.now()) => {
+    const rgbPalette = Array.isArray(rgbConfig.palette) && rgbConfig.palette.length
+        ? rgbConfig.palette
+        : [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12];
+    const frequency = Number(rgbFrequency.value) || Number(defaults.rgbFrequency) || 0.5;
+    const spread = Number(rgbSpread.value) || 0;
+    const cycle = ((timeMs / 1000) * frequency) + ((glyphIndex * spread) / 360);
+    return rgbPalette[Math.floor((((cycle % 1) + 1) % 1) * rgbPalette.length)];
+};
+
+const updateRgbPreview = (timeMs = performance.now()) => {
+    if (!rgbEnabled.checked) return;
+    glyphPreview.querySelectorAll('.preview-glyph').forEach((button) => {
+        const glyphIndex = Number(button.dataset.glyphIndex);
+        const tint = palette[rgbTintForGlyph(glyphIndex, timeMs)] ?? palette[0];
+        button.style.color = tint?.hex ?? '#ffffff';
+    });
 };
 
 const updateGlyphSelectionNote = (characters) => {
@@ -123,6 +174,7 @@ const renderGlyphPreview = () => {
     lineSpacingLabel.textContent = isVertical ? 'Column spacing' : 'Line spacing';
     glyphPreview.replaceChildren();
     let glyphIndex = 0;
+    const rgbTime = performance.now();
     lines.forEach((line) => {
         const lineElement = document.createElement('div');
         lineElement.className = 'preview-line';
@@ -141,10 +193,12 @@ const renderGlyphPreview = () => {
             const index = glyphIndex;
             glyphIndex += 1;
             const button = document.createElement('button');
-            const tint = palette[glyphTints[index]] ?? palette[0];
+            const tintIndex = rgbEnabled.checked ? rgbTintForGlyph(index, rgbTime) : glyphTints[index];
+            const tint = palette[tintIndex] ?? palette[0];
             button.type = 'button';
             button.className = 'preview-glyph';
             button.textContent = character;
+            button.dataset.glyphIndex = String(index);
             button.title = `Character ${index + 1}: ${character}`;
             button.style.color = tint?.hex ?? '#ffffff';
             button.classList.toggle('selected', selectedGlyphIndices.has(index));
@@ -258,6 +312,11 @@ const resetForm = () => {
     spacing.value = defaults.spacing ?? 0.08;
     lineSpacing.value = defaults.lineSpacing ?? 0.2;
     lightEnabled.checked = defaults.lightEnabled !== false;
+    rgbEnabled.checked = defaults.rgbEnabled === true;
+    rgbFrequency.value = defaults.rgbFrequency ?? 0.5;
+    rgbSpread.value = defaults.rgbSpread ?? 30;
+    updateRgbControlState();
+    updateRgbControlValues();
     scale.disabled = false;
     scaleLabel.textContent = 'Starting size';
     saveButton.hidden = true;
@@ -281,6 +340,11 @@ const loadRecord = (record) => {
     spacing.value = record.spacing;
     lineSpacing.value = record.lineSpacing;
     lightEnabled.checked = record.lightEnabled;
+    rgbEnabled.checked = record.rgbEnabled === true;
+    rgbFrequency.value = record.rgbFrequency ?? defaults.rgbFrequency ?? 0.5;
+    rgbSpread.value = record.rgbSpread ?? defaults.rgbSpread ?? 30;
+    updateRgbControlState();
+    updateRgbControlValues();
     selectTint(record.tint, false);
     const characters = visibleCharacters();
     glyphTints = Array.isArray(record.glyphTints) && record.glyphTints.length === characters.length
@@ -374,6 +438,9 @@ const placementPayload = () => {
         tint: selectedTint,
         glyphTints: [...glyphTints],
         lightEnabled: lightEnabled.checked,
+        rgbEnabled: rgbEnabled.checked,
+        rgbFrequency: Number(rgbFrequency.value),
+        rgbSpread: Number(rgbSpread.value),
     } };
 };
 
@@ -443,6 +510,18 @@ textInput.addEventListener('input', () => {
     syncGlyphTints();
 });
 lightEnabled.addEventListener('change', renderGlyphPreview);
+rgbEnabled.addEventListener('change', () => {
+    updateRgbControlState();
+    renderGlyphPreview();
+});
+rgbFrequency.addEventListener('input', () => {
+    updateRgbControlValues();
+    updateRgbPreview();
+});
+rgbSpread.addEventListener('input', () => {
+    updateRgbControlValues();
+    updateRgbPreview();
+});
 layout.addEventListener('change', renderGlyphPreview);
 search.addEventListener('input', renderRecords);
 
@@ -468,6 +547,8 @@ window.addEventListener('message', ({ data }) => {
         palette = data.palette ?? [];
         defaults = data.defaults ?? {};
         limits = data.limits ?? limits;
+        rgbConfig = data.rgbEffect ?? rgbConfig;
+        configureRgbControls();
         selectedTint = defaults.tint ?? 0;
         renderPalette();
         resetForm();
@@ -487,6 +568,10 @@ window.addEventListener('message', ({ data }) => {
     if (data.action === 'editor') editorHelp.hidden = !data.visible;
     if (data.action === 'cursorMode') cursorLabel.textContent = data.enabled ? 'Camera mode' : 'Gizmo mode';
 });
+
+setInterval(() => {
+    if (!app.hidden && rgbEnabled.checked) updateRgbPreview();
+}, 50);
 
 // The document canvas must stay transparent; only explicitly opened panels paint UI.
 document.documentElement.classList.remove('nui-loading');

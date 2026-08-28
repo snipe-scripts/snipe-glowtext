@@ -13,6 +13,15 @@ Config.GlyphAdvance = 0.72
 Config.SpaceAdvance = 0.55
 Config.VerticalAdvance = 1.15
 
+Config.RgbEffect = {
+    updateInterval = 50,
+    minFrequency = 0.05,
+    maxFrequency = 3.00,
+    minSpread = 0,
+    maxSpread = 360,
+    palette = { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12 },
+}
+
 Config.WorldBounds = {
     minX = -10000.0,
     maxX = 10000.0,
@@ -31,6 +40,9 @@ Config.Defaults = {
     scale = 1.0,
     tint = 0,
     lightEnabled = true,
+    rgbEnabled = false,
+    rgbFrequency = 0.50,
+    rgbSpread = 30,
 }
 
 Config.Palette = {

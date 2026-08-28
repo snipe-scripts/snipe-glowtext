@@ -55,6 +55,16 @@ show `Mixed` until a new colour is applied.
 `Enable glow` switches between the emissive `_v4` model and its non-emissive `_matte` counterpart; no separate
 world light or light-colour setting is used.
 
+`Enable RGB effect` cycles through the configured colour palette. `Frequency`
+controls complete colour cycles per second, while `Character spread` offsets the
+hue of each following character. A spread of `0°` keeps every character in sync;
+higher values create a travelling rainbow. RGB works with both glow and matte props
+and is animated in the character preview and placement gizmo.
+
+RGB settings are stored inside the existing `glyph_tints_json` value, so this update
+does not add database columns or require a migration. Placements saved by older
+versions continue to load with RGB disabled.
+
 When editing an existing placement, `Save changes` updates its content and appearance
 while preserving the saved transform. Use `Update with gizmo` only when the placement
 also needs to be moved, rotated or scaled.
