@@ -91,6 +91,13 @@ const visibleCountIn = (value) => [...value].filter((character) => !/\s/.test(ch
 const normalizeSpinAxis = (value) => ['x', 'y', 'z'].includes(String(value).toLowerCase())
     ? String(value).toLowerCase()
     : 'none';
+const activeSpinAxis = () => glyphSpinAxes
+    .map(normalizeSpinAxis)
+    .find((axis) => axis !== 'none') ?? 'none';
+const setWholeTextSpinAxis = (axis) => {
+    const normalizedAxis = normalizeSpinAxis(axis);
+    glyphSpinAxes = visibleCharacters().map(() => normalizedAxis);
+};
 
 const updateCount = () => {
     const count = visibleGlyphCount();
@@ -137,37 +144,24 @@ const updateRgbPreview = (timeMs = performance.now()) => {
 };
 
 const updateSpinControlState = () => {
-    const indices = [...selectedGlyphIndices];
-    const selectedAxes = indices.map((index) => normalizeSpinAxis(glyphSpinAxes[index]));
-    const enabledAxes = selectedAxes.filter((axis) => axis !== 'none');
-    const enabledCount = enabledAxes.length;
-    const distinctAxes = new Set(enabledAxes);
-    spinSelected.disabled = indices.length === 0;
-    spinSelected.indeterminate = enabledCount > 0 && enabledCount < indices.length;
-    spinSelected.checked = indices.length > 0 && enabledCount === indices.length;
-
-    if (!indices.length) spinSelectionState.textContent = 'No selection';
-    else if (spinSelected.indeterminate) spinSelectionState.textContent = 'Mixed';
-    else spinSelectionState.textContent = spinSelected.checked ? 'On' : 'Off';
-
-    if (enabledCount === indices.length && distinctAxes.size === 1) {
-        [selectedSpinAxis] = distinctAxes;
-        spinAxisState.textContent = selectedSpinAxis.toUpperCase();
-    } else if (distinctAxes.size > 1 || (enabledCount > 0 && enabledCount < indices.length)) {
-        spinAxisState.textContent = 'Mixed';
-    } else {
-        spinAxisState.textContent = selectedSpinAxis.toUpperCase();
-    }
+    const axis = activeSpinAxis();
+    const hasText = visibleGlyphCount() > 0;
+    const enabled = axis !== 'none';
+    spinSelected.disabled = !hasText;
+    spinSelected.indeterminate = false;
+    spinSelected.checked = enabled;
+    spinSelectionState.textContent = enabled ? 'On' : 'Off';
+    if (enabled) selectedSpinAxis = axis;
+    spinAxisState.textContent = selectedSpinAxis.toUpperCase();
 
     spinAxisButtons.forEach((button) => {
-        const pressed = spinAxisState.textContent !== 'Mixed' && button.dataset.spinAxis === selectedSpinAxis;
-        button.disabled = indices.length === 0;
+        const pressed = button.dataset.spinAxis === selectedSpinAxis;
+        button.disabled = !hasText;
         button.setAttribute('aria-pressed', pressed ? 'true' : 'false');
     });
 
-    const anySpinning = glyphSpinAxes.some((axis) => normalizeSpinAxis(axis) !== 'none');
-    spinFrequency.disabled = !anySpinning;
-    spinControls.classList.toggle('disabled', indices.length === 0);
+    spinFrequency.disabled = !enabled;
+    spinControls.classList.toggle('disabled', !hasText);
 };
 
 const updateSpinControlValue = () => {
@@ -182,12 +176,11 @@ const configureSpinControls = () => {
 const updateSpinPreview = (timeMs = performance.now()) => {
     const frequency = Number(spinFrequency.value) || Number(defaults.spinFrequency) || 0.25;
     const angle = (((timeMs / 1000) * frequency) % 1) * 360;
-    glyphPreview.querySelectorAll('.preview-glyph').forEach((button) => {
-        const glyphIndex = Number(button.dataset.glyphIndex);
-        const axis = normalizeSpinAxis(glyphSpinAxes[glyphIndex]);
-        const transform = axis === 'x' ? 'rotateX' : axis === 'y' ? 'rotateY' : axis === 'z' ? 'rotateZ' : null;
-        button.style.transform = transform ? `${transform}(${angle}deg)` : '';
-    });
+    const stage = glyphPreview.querySelector('.preview-stage');
+    if (!stage) return;
+    const axis = activeSpinAxis();
+    const transform = axis === 'x' ? 'rotateX' : axis === 'y' ? 'rotateY' : axis === 'z' ? 'rotateZ' : null;
+    stage.style.transform = transform ? `${transform}(${angle}deg)` : '';
 };
 
 const updateGlyphSelectionNote = (characters) => {
@@ -241,6 +234,8 @@ const renderGlyphPreview = () => {
     glyphPreview.classList.toggle('multiline', lines.length > 1);
     lineSpacingLabel.textContent = isVertical ? 'Column spacing' : 'Line spacing';
     glyphPreview.replaceChildren();
+    const previewStage = document.createElement('div');
+    previewStage.className = 'preview-stage';
     let glyphIndex = 0;
     const rgbTime = performance.now();
     lines.forEach((line) => {
@@ -292,8 +287,9 @@ const renderGlyphPreview = () => {
             });
             lineElement.appendChild(button);
         });
-        glyphPreview.appendChild(lineElement);
+        previewStage.appendChild(lineElement);
     });
+    glyphPreview.appendChild(previewStage);
     updateGlyphSelectionNote(characters);
     syncPaletteToGlyphSelection();
     updateSpinControlState();
@@ -329,7 +325,8 @@ const syncGlyphAppearance = () => {
     const removedCount = previousCharacters.length - prefixLength - suffixLength;
     const insertedCount = characters.length - prefixLength - suffixLength;
     glyphTints.splice(prefixLength, removedCount, ...Array(insertedCount).fill(selectedTint));
-    glyphSpinAxes.splice(prefixLength, removedCount, ...Array(insertedCount).fill('none'));
+    const currentSpinAxis = activeSpinAxis();
+    glyphSpinAxes.splice(prefixLength, removedCount, ...Array(insertedCount).fill(currentSpinAxis));
     glyphTints = characters.map((_, index) => Number.isInteger(glyphTints[index]) ? glyphTints[index] : selectedTint);
     glyphSpinAxes = characters.map((_, index) => normalizeSpinAxis(glyphSpinAxes[index]));
 
@@ -361,7 +358,7 @@ const insertSymbol = (symbol) => {
     const glyphIndex = visibleCountIn(currentValue.slice(0, start));
     const replacedGlyphCount = visibleCountIn(currentValue.slice(start, end));
     glyphTints.splice(glyphIndex, replacedGlyphCount, selectedTint);
-    glyphSpinAxes.splice(glyphIndex, replacedGlyphCount, 'none');
+    glyphSpinAxes.splice(glyphIndex, replacedGlyphCount, activeSpinAxis());
     textInput.value = nextValue;
     previousTextValue = nextValue;
     textInput.setSelectionRange(start + symbol.length, start + symbol.length);
@@ -464,6 +461,7 @@ const loadRecord = (record) => {
     } else {
         glyphSpinAxes = characters.map(() => 'none');
     }
+    setWholeTextSpinAxis(activeSpinAxis());
     previousTextValue = textInput.value;
     selectAllGlyphs();
     saveButton.hidden = false;
@@ -556,7 +554,7 @@ const placementPayload = () => {
         rgbEnabled: rgbEnabled.checked,
         rgbFrequency: Number(rgbFrequency.value),
         rgbSpread: Number(rgbSpread.value),
-        glyphSpinAxes: [...glyphSpinAxes],
+        glyphSpinAxes: visibleCharacters().map(() => activeSpinAxis()),
         spinFrequency: Number(spinFrequency.value),
     } };
 };
@@ -640,18 +638,16 @@ rgbSpread.addEventListener('input', () => {
     updateRgbPreview();
 });
 spinSelected.addEventListener('change', () => {
-    if (!selectedGlyphIndices.size) return;
-    selectedGlyphIndices.forEach((glyphIndex) => {
-        glyphSpinAxes[glyphIndex] = spinSelected.checked ? selectedSpinAxis : 'none';
-    });
+    if (!visibleGlyphCount()) return;
+    setWholeTextSpinAxis(spinSelected.checked ? selectedSpinAxis : 'none');
     setStatus();
     renderGlyphPreview();
 });
 spinAxisButtons.forEach((button) => {
     button.addEventListener('click', () => {
-        if (!selectedGlyphIndices.size) return;
+        if (!visibleGlyphCount()) return;
         selectedSpinAxis = normalizeSpinAxis(button.dataset.spinAxis);
-        selectedGlyphIndices.forEach((glyphIndex) => { glyphSpinAxes[glyphIndex] = selectedSpinAxis; });
+        setWholeTextSpinAxis(selectedSpinAxis);
         setStatus();
         renderGlyphPreview();
     });
@@ -711,7 +707,7 @@ window.addEventListener('message', ({ data }) => {
 
 setInterval(() => {
     if (!app.hidden && rgbEnabled.checked) updateRgbPreview();
-    if (!app.hidden && glyphSpinAxes.some((axis) => normalizeSpinAxis(axis) !== 'none')) updateSpinPreview();
+    if (!app.hidden && activeSpinAxis() !== 'none') updateSpinPreview();
 }, 33);
 
 // The document canvas must stay transparent; only explicitly opened panels paint UI.

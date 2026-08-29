@@ -174,6 +174,19 @@ local function spinAxisForGlyph(record, glyphIndex)
     return nil
 end
 
+local function spinAxisForGroup(record)
+    if record.spinAxis == 'x' or record.spinAxis == 'y' or record.spinAxis == 'z' then
+        return record.spinAxis
+    end
+    local axes = type(record.glyphSpinAxes) == 'table' and record.glyphSpinAxes or record.glyphSpins
+    if type(axes) ~= 'table' then return nil end
+    for i = 1, #axes do
+        local axis = spinAxisForGlyph(record, i)
+        if axis then return axis end
+    end
+    return nil
+end
+
 local function buildGlyphLayout(record)
     local result = {}
     local spacing = tonumber(record.spacing) or Config.Defaults.spacing
@@ -287,14 +300,13 @@ local function initialMatrix(scale)
 end
 
 local function applyGlyphTransform(entity, glyph)
-    if not DoesEntityExist(entity) or not glyph.basePosition then return end
+    if not DoesEntityExist(entity) or not glyph.baseOrigin then return end
     local angle = glyph.spinAngle or 0.0
     local cosine = math.cos(angle)
     local sine = math.sin(angle)
     local right = glyph.baseRight
     local forward = glyph.baseForward
     local up = glyph.baseUp
-    local position = glyph.basePosition
 
     if glyph.spinAxis == 'x' then
         forward = (glyph.baseForward * cosine) + (glyph.baseUp * sine)
@@ -306,6 +318,11 @@ local function applyGlyphTransform(entity, glyph)
         right = (glyph.baseRight * cosine) + (glyph.baseUp * sine)
         up = (glyph.baseUp * cosine) - (glyph.baseRight * sine)
     end
+
+    local position = glyph.baseOrigin
+        + (right * glyph.spinX)
+        + (forward * glyph.spinY)
+        + (up * glyph.spinZ)
 
     SetEntityMatrix(entity,
         forward.x, forward.y, forward.z,
@@ -320,16 +337,36 @@ local function applyGroupMatrix(entities, glyphs, view)
     local forward = vector3(view:GetFloat32(16), view:GetFloat32(20), view:GetFloat32(24))
     local up = vector3(view:GetFloat32(32), view:GetFloat32(36), view:GetFloat32(40))
     local origin = vector3(view:GetFloat32(48), view:GetFloat32(52), view:GetFloat32(56))
+    local minX, maxX, minY, maxY, minZ, maxZ
+
+    for i = 1, #glyphs do
+        local glyph = glyphs[i]
+        if glyph then
+            minX = not minX and glyph.x or math.min(minX, glyph.x)
+            maxX = not maxX and glyph.x or math.max(maxX, glyph.x)
+            minY = not minY and glyph.y or math.min(minY, glyph.y)
+            maxY = not maxY and glyph.y or math.max(maxY, glyph.y)
+            minZ = not minZ and glyph.z or math.min(minZ, glyph.z)
+            maxZ = not maxZ and glyph.z or math.max(maxZ, glyph.z)
+        end
+    end
+
+    local pivotX = minX and (minX + maxX) * 0.5 or 0.0
+    local pivotY = minY and (minY + maxY) * 0.5 or 0.0
+    local pivotZ = minZ and (minZ + maxZ) * 0.5 or 0.0
+    local pivot = origin + (right * pivotX) + (forward * pivotY) + (up * pivotZ)
 
     for i = 1, #entities do
         local entity = entities[i]
         local glyph = glyphs[i]
         if DoesEntityExist(entity) and glyph then
-            local position = origin + (right * glyph.x) + (forward * glyph.y) + (up * glyph.z)
             glyph.baseRight = right
             glyph.baseForward = forward
             glyph.baseUp = up
-            glyph.basePosition = position
+            glyph.baseOrigin = pivot
+            glyph.spinX = glyph.x - pivotX
+            glyph.spinY = glyph.y - pivotY
+            glyph.spinZ = glyph.z - pivotZ
             applyGlyphTransform(entity, glyph)
         end
     end
@@ -460,6 +497,7 @@ end
 
 local function updateSpinGroup(entities, glyphs, record, timeMs)
     if type(record.glyphSpinAxes) ~= 'table' and type(record.glyphSpins) ~= 'table' then return false end
+    local axis = spinAxisForGroup(record)
     local frequency = boundedNumber(
         record.spinFrequency,
         Config.SpinEffect.minFrequency,
@@ -472,7 +510,6 @@ local function updateSpinGroup(entities, glyphs, record, timeMs)
     for i = 1, #entities do
         local entity = entities[i]
         local glyph = glyphs[i]
-        local axis = spinAxisForGlyph(record, i)
         if glyph and axis then
             active = true
             glyph.spinAxis = axis

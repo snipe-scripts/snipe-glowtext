@@ -2,7 +2,7 @@ fx_version 'cerulean'
 game 'gta5'
 lua54 'yes'
 
-author 'SnipeOPGaming / OpenAI'
+author 'SnipeOPGaming'
 description 'Standalone persistent glow-glyph text placement'
 version '1.2.0'
 
